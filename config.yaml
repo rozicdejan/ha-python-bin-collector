@@ -1,7 +1,7 @@
-name: "Bin Collection Schedule Simbio"
+name: "Bin Collection Schedule Simbio 2024"
 version: "1.1.55"
-slug: "bin_collection_simbio"
-description: "Displays waste collection schedule for your address"
+slug: "bin_collection_simbio_v1"
+description: "Displays waste collection schedule for your address - Simbio"
 url: "http://homeassistant.local:8123/hassio/dashboard"
 arch:
   - aarch64
