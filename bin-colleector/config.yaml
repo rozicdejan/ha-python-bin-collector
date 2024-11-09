@@ -1,5 +1,5 @@
 name: "Bin Collection Schedule"
-version: "1.0.2"
+version: "1.0.45"
 slug: "bin_collection"
 description: "Displays waste collection schedule for your address"
 url: "http://homeassistant.local:8123/hassio/dashboard"
