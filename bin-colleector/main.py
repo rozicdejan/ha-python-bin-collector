@@ -79,17 +79,19 @@ class WasteData:
 waste_data = WasteData()
 
 def get_address() -> str:
-    # Get address from OPTIONS_ADDRESS first
-    address = os.getenv("OPTIONS_ADDRESS")
-    if address:
-        logger.info(f"Found OPTIONS_ADDRESS: {address}")
-        return address
-    
+
     # Fallback to ADDRESS
     address = os.getenv("ADDRESS")
     if address:
         logger.info(f"Found ADDRESS: {address}")
         return address
+    
+    # Get address from OPTIONS_ADDRESS first
+    address = os.getenv("OPTIONS_ADDRESS")
+    if address:
+        logger.info(f"Found OPTIONS_ADDRESS: {address}")
+        return address
+       
     
     # Default address as last resort
     default_address = "začret 69"
