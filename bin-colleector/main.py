@@ -8,7 +8,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Optional
 from threading import Lock
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, Response
 
 # Constants
 URL = "https://www.simbio.si/sl/moj-dan-odvoza-odpadkov"
@@ -19,11 +19,13 @@ UPDATE_INTERVAL = 15 * 60  # 15 minutes in seconds
 
 # Initialize Flask app
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False  # Enable proper Unicode handling in JSON responses
 
 # Configure logging
 logging.basicConfig(
     format='[BIN-COLLECTOR] %(asctime)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    level=logging.INFO,
+    encoding='utf-8'  # Enable UTF-8 encoding for logs
 )
 logger = logging.getLogger(__name__)
 
@@ -75,11 +77,17 @@ def get_address() -> str:
 
 def fetch_data() -> bool:
     address = get_address()
-    payload = f"action=simbioOdvozOdpadkov&query={address}"
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    # Ensure the address is properly encoded for the POST request
+    encoded_address = address.encode('utf-8').decode('utf-8')
+    payload = f"action=simbioOdvozOdpadkov&query={encoded_address}"
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8'
+    }
 
     try:
-        response = requests.post(URL, data=payload, headers=headers, timeout=REQUEST_TIMEOUT)
+        response = requests.post(URL, data=payload.encode('utf-8'), headers=headers, timeout=REQUEST_TIMEOUT)
+        response.encoding = 'utf-8'  # Ensure response is interpreted as UTF-8
         response.raise_for_status()
         schedules = response.json()
 
@@ -133,7 +141,9 @@ def data_handler():
 @app.route('/api/data')
 def api_data_handler():
     with waste_data.lock:
-        return jsonify(waste_data.full)
+        response = jsonify(waste_data.full)
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response
 
 def main():
     logger.info("Starting bin collector service...")
