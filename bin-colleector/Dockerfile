@@ -29,23 +29,20 @@ WORKDIR /usr/src/app
 RUN python3 -m venv venv
 ENV PATH="/usr/src/app/venv/bin:$PATH"
 
-# Install Python packages
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
-
 # Create necessary directories
 RUN mkdir -p /logs /config /ssl /tmp
 
 # Copy your application files
-COPY rootfs /
-COPY run.sh /
 COPY . .
 
-# Set permissions
-RUN chmod a+x /run.sh
+# Install Python packages
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Set permissions for run script
+RUN chmod a+x run.sh
 
 # Expose the web interface port
 EXPOSE 8081
 
 # Start the application
-CMD [ "/run.sh" ]
+CMD [ "./run.sh" ]
