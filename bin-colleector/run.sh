@@ -15,4 +15,4 @@ chmod 666 "$LOG_FILE"
 
 # Start your Python application
 # Replace 'app.py' with your actual Python script name
-python3 /usr/src/app/app.py
+python3 /usr/src/app/main.py
