@@ -1,130 +1,153 @@
-<!DOCTYPE html>
-<html lang="en">
+import os
+import json
+import time
+import logging
+import threading
+import requests
+from datetime import datetime
+from dataclasses import dataclass
+from typing import List, Optional
+from threading import Lock
+from flask import Flask, jsonify, render_template
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waste Collection Schedule</title>
-    <style>
-        /* Background animation */
-        @keyframes gradient {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
+# Constants
+URL = "https://www.simbio.si/sl/moj-dan-odvoza-odpadkov"
+RETRY_COUNT = 3
+RETRY_DELAY = 5  # seconds
+REQUEST_TIMEOUT = 10  # seconds
+UPDATE_INTERVAL = 15 * 60  # 15 minutes in seconds
 
-        body {
-            font-family: 'Arial', sans-serif;
-            color: #333;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-            margin: 0;
-            padding: 0;
-        }
+# Initialize Flask app
+app = Flask(__name__)
 
-        h1 {
-            text-align: center;
-            color: white;
-            font-size: 14px;
-            margin-top: 10px;
-        }
+# Configure logging
+logging.basicConfig(
+    format='[BIN-COLLECTOR] %(asctime)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
-        .container {
-            display: flex;
-            justify-content: space-around;
-            padding: 20px;
-            flex-wrap: wrap;
-        }
+@dataclass
+class WasteSchedule:
+    id: str
+    name: str
+    query: str
+    city: str
+    next_mko: str
+    next_emb: str
+    next_bio: str
 
-        .item {
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            margin: 10px;
-            flex: 1;
-            min-width: 200px;
-            max-width: 200px;
-            transition: transform 0.3s;
-        }
+@dataclass
+class TemplateData:
+    mko_name: str = "Mešani komunalni odpadki"
+    mko_date: str = ""
+    emb_name: str = "Embalaža"
+    emb_date: str = ""
+    bio_name: str = "Biološki odpadki"
+    bio_date: str = ""
 
-        .item:hover {
-            transform: translateY(-10px);
-        }
+@dataclass
+class FullData:
+    name: str
+    query: str
+    city: str
+    mko_name: str = "Mešani komunalni odpadki"
+    mko_date: str = ""
+    emb_name: str = "Embalaža"
+    emb_date: str = ""
+    bio_name: str = "Biološki odpadki"
+    bio_date: str = ""
 
-        .item img {
-            width: 50px;
-            height: 50px;
-        }
+class WasteData:
+    def __init__(self):
+        self.lock = Lock()
+        self.template = TemplateData()
+        self.full = Optional[FullData]
 
-        .item p {
-            font-size: 14px;
-            margin-top: 10px;
-        }
+waste_data = WasteData()
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-            color: white;
-            font-size: 0.8em;
-        }
+def get_address() -> str:
+    address = os.getenv("ADDRESS")
+    if not address:
+        address = "začret 69"
+        logger.info(f"No ADDRESS environment variable set, using default: {address}")
+    return address
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
+def fetch_data() -> bool:
+    address = get_address()
+    payload = f"action=simbioOdvozOdpadkov&query={address}"
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-            .item {
-                padding: 15px;
-                margin: 5px;
-                min-width: 120px;
-            }
+    try:
+        response = requests.post(URL, data=payload, headers=headers, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+        schedules = response.json()
 
-            .item img {
-                width: 40px;
-                height: 40px;
-            }
-        }
-    </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+        if not schedules:
+            raise ValueError("No data received in the response")
 
-<body>
-    <div class="container">
-        <div class="item" id="mko">
-            <!-- Ensure the image exists in your static folder -->
-            <img src="{{ url_for('static', filename='mesani.svg') }}" alt="Mešani komunalni odpadki">
-            <p>{{ data.mko_name }}<br>{{ data.mko_date }}</p>
-        </div>
-        <div class="item" id="emb">
-            <img src="{{ url_for('static', filename='embalaza.svg') }}" alt="Embalaža">
-            <p>{{ data.emb_name }}<br>{{ data.emb_date }}</p>
-        </div>
-        <div class="item" id="bio">
-            <img src="{{ url_for('static', filename='bioloski.svg') }}" alt="Biološki odpadki">
-            <p>{{ data.bio_name }}<br>{{ data.bio_date }}</p>
-        </div>
-    </div>
+        first_schedule = schedules[0]
 
-    <script>
-        // Auto-refresh every 15 seconds
-        setInterval(function () {
-            location.reload();
-        }, 15000);
-    </script>
-</body>
+        with waste_data.lock:
+            waste_data.template = TemplateData(
+                mko_date=first_schedule['next_mko'],
+                emb_date=first_schedule['next_emb'],
+                bio_date=first_schedule['next_bio']
+            )
+            
+            waste_data.full = FullData(
+                name=first_schedule['name'],
+                query=first_schedule['query'],
+                city=first_schedule['city'],
+                mko_date=first_schedule['next_mko'],
+                emb_date=first_schedule['next_emb'],
+                bio_date=first_schedule['next_bio']
+            )
+        
+        return True
 
-</html>
+    except Exception as e:
+        logger.error(f"Error fetching data: {str(e)}")
+        return False
+
+def fetch_data_with_retry() -> bool:
+    for attempt in range(RETRY_COUNT):
+        if fetch_data():
+            return True
+        logger.warning(f"Attempt {attempt + 1} failed, retrying...")
+        time.sleep(RETRY_DELAY)
+    
+    logger.error("All retry attempts failed")
+    return False
+
+def data_updater():
+    while True:
+        fetch_data_with_retry()
+        time.sleep(UPDATE_INTERVAL)
+
+@app.route('/')
+def data_handler():
+    with waste_data.lock:
+        return render_template('template.html', data=waste_data.template)
+
+@app.route('/api/data')
+def api_data_handler():
+    with waste_data.lock:
+        return jsonify(waste_data.full)
+
+def main():
+    logger.info("Starting bin collector service...")
+    
+    # Initial data fetch
+    if not fetch_data_with_retry():
+        logger.error("Initial data fetch failed")
+    
+    # Start background updater in a separate thread
+    updater_thread = threading.Thread(target=data_updater, daemon=True)
+    updater_thread.start()
+    
+    # Start server
+    app.run(host='0.0.0.0', port=8081)
+
+if __name__ == '__main__':
+    main()
