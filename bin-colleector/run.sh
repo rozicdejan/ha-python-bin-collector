@@ -9,7 +9,7 @@ else
 fi
 
 # Get config value from Home Assistant
-export ADDRESS=$(bashio::config 'address')
+export ADDRESS=$(bashio::config 'ADDRESS')
 
 # Start the Flask application
 python main.py
