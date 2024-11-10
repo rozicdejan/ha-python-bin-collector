@@ -1,4 +1,6 @@
 #!/usr/bin/env bashio
+source /usr/lib/bashio/bashio.sh
+
 if [ -f "DOCS.md" ]; then
     echo "DOCS.md found"
 else
