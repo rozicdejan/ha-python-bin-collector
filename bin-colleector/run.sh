@@ -1,26 +1,18 @@
 #!/usr/bin/with-contenv bashio
 
-# Log all output to a file
-exec > >(tee -a /tmp/addon_debug.log) 2>&1
+# Make sure our log directory exists
+mkdir -p /logs
 
-echo "Starting the add-on"
+# Export configuration from Home Assistant
+export OPTIONS_ADDRESS="$(bashio::config 'address')"
+export LOG_FILE="/logs/waste_collection.log"
 
-# Check for the presence of DOCS.md
-if [ -f "DOCS.md" ]; then
-    echo "DOCS.md found"
-else
-    echo "DOCS.md not found, exiting"
-    exit 1
-fi
+# Create log file if it doesn't exist
+touch "$LOG_FILE"
 
-# Retrieve the 'address' configuration using Bashio
-if bashio::config.has_value 'address'; then
-    ADDRESS=$(bashio::config 'address')
-    echo "Address from configuration: $ADDRESS"
-else
-    echo "Address not set in configuration, exiting"
-    exit 1
-fi
+# Make sure Python can write to the log file
+chmod 666 "$LOG_FILE"
 
-# Start the Flask application
-python main.py
+# Start your Python application
+# Replace 'app.py' with your actual Python script name
+python3 /usr/src/app/app.py
