@@ -1,5 +1,4 @@
 #!/usr/bin/env bashio
-source /usr/lib/bashio/bashio.sh
 
 if [ -f "DOCS.md" ]; then
     echo "DOCS.md found"
@@ -8,8 +7,13 @@ else
     exit 1
 fi
 
+
+# Load configuration from config.json
+ADDRESS=$(jq --raw-output '.address' /data/options.json)
+
+
 # Get config value from Home Assistant
-export ADDRESS=$(bashio::config 'ADDRESS')
+#export ADDRESS=$(bashio::config 'ADDRESS')
 
 # Start the Flask application
 python main.py
