@@ -105,16 +105,16 @@
 <body>
     <div class="container">
         <div class="item" id="mko">
-            <img src="/static/mesani.svg" alt="Mešani komunalni odpadki">
-            <p>{{.MKOName}}<br>{{.MKODate}}</p>
+            <img src="{{ url_for('static', filename='mesani.svg') }}" alt="Mešani komunalni odpadki">
+            <p>{{ data.mko_name }}<br>{{ data.mko_date }}</p>
         </div>
         <div class="item" id="emb">
-            <img src="/static/embalaza.svg" alt="Embalaža">
-            <p>{{.EmbName}}<br>{{.EmbDate}}</p>
+            <img src="{{ url_for('static', filename='embalaza.svg') }}" alt="Embalaža">
+            <p>{{ data.emb_name }}<br>{{ data.emb_date }}</p>
         </div>
         <div class="item" id="bio">
-            <img src="/static/bioloski.svg" alt="Biološki odpadki">
-            <p>{{.BioName}}<br>{{.BioDate}}</p>
+            <img src="{{ url_for('static', filename='bioloski.svg') }}" alt="Biološki odpadki">
+            <p>{{ data.bio_name }}<br>{{ data.bio_date }}</p>
         </div>
     </div>
 
