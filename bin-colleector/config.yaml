@@ -1,5 +1,5 @@
 name: "Bin Collection Schedule - Simbio v1"
-version: "1.1.93"
+version: "1.1.95"
 slug: "bin_collection_simbiov1"
 description: "Displays waste collection schedule for your address - Simbio mode"
 url: "http://homeassistant.local:8123/hassio/dashboard"
@@ -11,10 +11,10 @@ arch:
   - i386
 startup: application
 boot: auto
-ports:
-  8081/tcp: 8081
+ports: 
+  "8081/tcp": null  # This makes the port dynamic and configurable
 ports_description:
-  8081/tcp: Web interface
+  "8081/tcp": "Web interface (configurable in options)"
 webui: "http://[HOST]:[PORT:8081]/"
 init: false
 map:
@@ -24,9 +24,10 @@ map_additional:
   - "/share/waste_collection/logs:/logs"
 options:
   address: "POLJSKA POT 6, LJUBEČNA"
+  port: 8081  # Default port
 schema:
   address: str
+  port: port  # This validates that the input is a valid port number
 environment:
-  #OPTIONS_ADDRESS: "ZAČRET 69, LJUBEČNA"  # Hardcoded for testing
-  LOG_FILE: "/tmp/waste_collection.log"       # Temporary logging path
+  LOG_FILE: "/tmp/waste_collection.log"
 hassio_api: true

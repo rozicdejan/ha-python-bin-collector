@@ -4,6 +4,7 @@ import time
 import logging
 import threading
 import requests
+import argparse
 from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Optional
@@ -79,7 +80,6 @@ class WasteData:
 waste_data = WasteData()
 
 def get_address() -> str:
-
     # Fallback to ADDRESS
     address = os.getenv("ADDRESS")
     if address:
@@ -97,11 +97,22 @@ def get_address() -> str:
         logger.info(f"Found OPTIONS_ADDRESS: {address}")
         return address
        
-    
     # Default address as last resort
     default_address = "začret 67"
     logger.warning(f"No address found in environment, using default: {default_address}")
     return default_address
+
+def get_port() -> int:
+    # Get port from environment variable first (set by Home Assistant)
+    port = os.getenv("OPTIONS_PORT")
+    if port:
+        try:
+            return int(port)
+        except (TypeError, ValueError):
+            logger.warning(f"Invalid port in OPTIONS_PORT: {port}, using default")
+    
+    # Default port as fallback
+    return 8081
 
 def fetch_data() -> bool:
     address = get_address()
@@ -186,6 +197,10 @@ def main():
     logger.info("=== Starting Waste Collection Service ===")
     logger.info(f"Current working directory: {os.getcwd()}")
     
+    # Get port number from environment
+    port = get_port()
+    logger.info(f"Using port: {port}")
+    
     # Initial data fetch
     if not fetch_data_with_retry():
         logger.error("Initial data fetch failed")
@@ -198,8 +213,8 @@ def main():
     updater_thread.start()
     
     # Start Flask server
-    logger.info("Starting Flask server on port 8081")
-    app.run(host='0.0.0.0', port=8081)
+    logger.info(f"Starting Flask server on port {port}")
+    app.run(host='0.0.0.0', port=port)
 
 if __name__ == '__main__':
     main()

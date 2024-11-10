@@ -41,8 +41,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Set permissions for run script
 RUN chmod a+x run.sh
 
-# Expose the web interface port
-EXPOSE 8081
+# Note: We don't need EXPOSE anymore as the port is dynamic
 
 # Start the application
 CMD [ "./run.sh" ]
