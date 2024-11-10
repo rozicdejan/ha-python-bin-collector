@@ -3,6 +3,10 @@
 ![Validates with hassfest](https://img.shields.io/badge/hassfest-passing-green)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+
+<!-- Screenshoot image -->
+![Alt Text](https://github.com/rozicdejan/ha-python-bin-collector/blob/main/pictures/ha-screenshoot.png?raw=true)
+
 ## About
 
 This Home Assistant add-on displays waste collection schedules for residents served by Simbio waste management in Slovenia. It fetches and displays upcoming collection dates for different types of waste (mixed waste, packaging, and bio waste).
