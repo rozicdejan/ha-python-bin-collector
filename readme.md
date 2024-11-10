@@ -7,7 +7,7 @@
 
 This Home Assistant add-on displays waste collection schedules for residents served by Simbio waste management in Slovenia. It fetches and displays upcoming collection dates for different types of waste (mixed waste, packaging, and bio waste).
 
-Current version: **1.1.95**
+Current version: **2.0.0**
 
 ## Features
 
@@ -33,8 +33,8 @@ Current version: **1.1.95**
 The add-on can be configured via the Home Assistant UI. These options are available:
 
 ```yaml
-address: "POLJSKA POT 6, LJUBEČNA"  # Required: Your street address
-port: 8081                          # Optional: Web interface port (default: 8081)
+address: "ZAČRET 69, LJUBEČNA"  # Required: Your street address
+port: 8081                      # Optional: Web interface port (default: 8081) -enable port!
 ```
 
 ## Supported Architectures
