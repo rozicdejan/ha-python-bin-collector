@@ -1,4 +1,10 @@
-FROM python:3.11-slim-bullseye
+ARG BUILD_FROM
+FROM $BUILD_FROM
+
+# Install requirements for add-on
+RUN \
+  apk add --no-cache \
+    python3
 
 # Set working directory
 WORKDIR /usr/src/app
