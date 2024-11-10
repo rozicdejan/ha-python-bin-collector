@@ -71,7 +71,7 @@ waste_data = WasteData()
 def get_address() -> str:
     address = os.getenv("ADDRESS")
     if not address:
-        address = "začret 69"
+        address = "ZAČRET 69, LJUBEČNA"
         logger.info(f"No ADDRESS environment variable set, using default: {address}")
     return address
 
