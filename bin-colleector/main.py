@@ -78,16 +78,23 @@ class WasteData:
 
 waste_data = WasteData()
 
-def get_address_from_config():
-    try:
-        with open('/data/options.json') as config_file:
-            config = json.load(config_file)
-            return config.get("address", "Default Address")
-    except FileNotFoundError:
-        logger.warning("Options file not found, using default address")
-        return "Začret 69"
-
-address = get_address_from_config()
+def get_address() -> str:
+    # Get address from OPTIONS_ADDRESS first
+    address = os.getenv("OPTIONS_ADDRESS")
+    if address:
+        logger.info(f"Found OPTIONS_ADDRESS: {address}")
+        return address
+    
+    # Fallback to ADDRESS
+    address = os.getenv("ADDRESS")
+    if address:
+        logger.info(f"Found ADDRESS: {address}")
+        return address
+    
+    # Default address as last resort
+    default_address = "začret 69"
+    logger.warning(f"No address found in environment, using default: {default_address}")
+    return default_address
 
 def fetch_data() -> bool:
     address = get_address()
