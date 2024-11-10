@@ -103,51 +103,26 @@
 </head>
 
 <body>
-    <h1>Waste Collection Schedule</h1>
     <div class="container">
         <div class="item" id="mko">
-            <img src="{{ url_for('static', filename='mesani.svg') }}" alt="Mešani komunalni odpadki">
-            <p id="mko_name"></p>
-            <p id="mko_date"></p>
+            <img src="/static/mesani.svg" alt="Mešani komunalni odpadki">
+            <p>{{.MKOName}}<br>{{.MKODate}}</p>
         </div>
         <div class="item" id="emb">
-            <img src="{{ url_for('static', filename='embalaza.svg') }}" alt="Embalaža">
-            <p id="emb_name"></p>
-            <p id="emb_date"></p>
+            <img src="/static/embalaza.svg" alt="Embalaža">
+            <p>{{.EmbName}}<br>{{.EmbDate}}</p>
         </div>
         <div class="item" id="bio">
-            <img src="{{ url_for('static', filename='bioloski.svg') }}" alt="Biološki odpadki">
-            <p id="bio_name"></p>
-            <p id="bio_date"></p>
+            <img src="/static/bioloski.svg" alt="Biološki odpadki">
+            <p>{{.BioName}}<br>{{.BioDate}}</p>
         </div>
     </div>
 
     <script>
-        function fetchWasteData() {
-            $.ajax({
-                url: '/api/data',  // The API endpoint to fetch data
-                method: 'GET',
-                success: function(data) {
-                    // Update the page with new data
-                    $('#mko_name').text(data.mko_name);
-                    $('#mko_date').text(data.mko_date);
-                    $('#emb_name').text(data.emb_name);
-                    $('#emb_date').text(data.emb_date);
-                    $('#bio_name').text(data.bio_name);
-                    $('#bio_date').text(data.bio_date);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching data: ", error);
-                }
-            });
-        }
-
-        // Fetch data when the page loads
-        $(document).ready(function() {
-            fetchWasteData();
-            // Auto-refresh data every 15 seconds without reloading the page
-            setInterval(fetchWasteData, 15000);
-        });
+        // Auto-refresh every 15 seconds
+        setInterval(function () {
+            location.reload();
+        }, 15000);
     </script>
 </body>
 
