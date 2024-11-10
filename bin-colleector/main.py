@@ -94,7 +94,7 @@ def get_address() -> str:
        
     
     # Default address as last resort
-    default_address = "začret 69"
+    default_address = "začret 68"
     logger.warning(f"No address found in environment, using default: {default_address}")
     return default_address
 
