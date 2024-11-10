@@ -1,5 +1,5 @@
 name: "Bin Collection Schedule - Simbio v1"
-version: "1.1.79"
+version: "1.1.80"
 slug: "bin_collection_simbiov1"
 description: "Displays waste collection schedule for your address - Simbio mode"
 url: "http://homeassistant.local:8123/hassio/dashboard"
@@ -27,6 +27,6 @@ options:
 schema:
   address: str
 environment:
-  OPTIONS_ADDRESS: "ZAČRET 69, LJUBEČNA"  # Hardcoded for testing
+  #OPTIONS_ADDRESS: "ZAČRET 69, LJUBEČNA"  # Hardcoded for testing
   LOG_FILE: "/tmp/waste_collection.log"       # Temporary logging path
 hassio_api: true
