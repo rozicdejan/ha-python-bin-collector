@@ -1,4 +1,4 @@
-#!/usr/bin/env bashio
+#!/usr/bin/with-contenv bashio
 source /usr/lib/bashio/bashio.sh
 
 exec > >(tee -a /tmp/addon_debug.log) 2>&1  # Log all output to a file
