@@ -1,30 +1,75 @@
-# Home Assistant Bin Collection Schedule Add-on
+# Bin Collection Schedule - Simbio
 
-This Home Assistant add-on displays your waste collection schedule in a beautiful, easy-to-read interface.
+![Validates with hassfest](https://img.shields.io/badge/hassfest-passing-green)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## About
+
+This Home Assistant add-on displays waste collection schedules for residents served by Simbio waste management in Slovenia. It fetches and displays upcoming collection dates for different types of waste (mixed waste, packaging, and bio waste).
+
+Current version: **1.1.95**
 
 ## Features
 
-- Displays collection dates for different waste types
-- Auto-updating schedule
-- Responsive design
-- Easy configuration
+- Real-time waste collection schedule information
+- Supports three waste types:
+  - Mixed Municipal Waste (Mešani komunalni odpadki)
+  - Packaging (Embalaža)
+  - Biological Waste (Biološki odpadki)
+- Automatic updates every 15 minutes
+- Web interface for easy viewing
+- REST API endpoint for integration
+- Detailed logging for troubleshooting
 
 ## Installation
 
-1. Add repository to Home Assistant
-2. Install the add-on
-3. Configure your address
-4. Start the add-on
+1. Navigate to your Home Assistant Supervisor panel
+2. Click on the Add-on Store
+3. Add this repository URL: `https://github.com/rozicdejan/ha-python-bin-collector`
+4. Install the "Bin Collection Schedule - Simbio" add-on
 
-For detailed instructions, see [DOCS.md](DOCS.md)
+## Configuration
+
+The add-on can be configured via the Home Assistant UI. These options are available:
+
+```yaml
+address: "POLJSKA POT 6, LJUBEČNA"  # Required: Your street address
+port: 8081                          # Optional: Web interface port (default: 8081)
+```
+
+## Supported Architectures
+
+- aarch64
+- amd64
+- armhf
+- armv7
+- i386
+
+## Network
+
+The add-on exposes a web interface on port 8081 (configurable). You can access it at:
+`http://[HOST]:[PORT:8081]/`
+
+## API Response Example
+
+```json
+{
+  "name": "Street Name",
+  "query": "entered_address",
+  "city": "City Name",
+  "mko_name": "Mešani komunalni odpadki",
+  "mko_date": "2024-01-01",
+  "emb_name": "Embalaža",
+  "emb_date": "2024-01-02",
+  "bio_name": "Biološki odpadki",
+  "bio_date": "2024-01-03"
+}
+```
 
 ## Support
 
-If you find this add-on helpful, please consider:
-- Starring the repository
-- Reporting issues
-- Contributing to the code
+For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/rozicdejan/ha-python-bin-collector).
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the LICENSE file for details.
