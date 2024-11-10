@@ -19,13 +19,13 @@ UPDATE_INTERVAL = 15 * 60  # 15 minutes in seconds
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False  # Enable proper Unicode handling in JSON responses
+app.config['JSON_AS_ASCII'] = False
 
 # Configure logging
 logging.basicConfig(
     format='[BIN-COLLECTOR] %(asctime)s - %(levelname)s - %(message)s',
     level=logging.INFO,
-    encoding='utf-8'  # Enable UTF-8 encoding for logs
+    encoding='utf-8'
 )
 logger = logging.getLogger(__name__)
 
@@ -69,14 +69,26 @@ class WasteData:
 waste_data = WasteData()
 
 def get_address() -> str:
-    address = os.getenv("ADDRESS")
+    # First try to get from OPTIONS_ADDRESS (Home Assistant add-on config)
+    address = os.getenv("OPTIONS_ADDRESS")
     if not address:
-        address = "ZAČRET 69, LJUBEČNA"
-        logger.info(f"No ADDRESS environment variable set, using default: {address}")
+        # Fallback to ADDRESS environment variable
+        address = os.getenv("ADDRESS")
+        if not address:
+            # Use default only if no environment variables are set
+            address = "začret 69"
+            logger.warning(f"No address configuration found, using default: {address}")
+        else:
+            logger.info(f"Using ADDRESS environment variable: {address}")
+    else:
+        logger.info(f"Using OPTIONS_ADDRESS from add-on config: {address}")
     return address
 
 def fetch_data() -> bool:
     address = get_address()
+    # Log the actual address being used for debugging
+    logger.info(f"Fetching data for address: {address}")
+    
     # Ensure the address is properly encoded for the POST request
     encoded_address = address.encode('utf-8').decode('utf-8')
     payload = f"action=simbioOdvozOdpadkov&query={encoded_address}"
@@ -87,7 +99,7 @@ def fetch_data() -> bool:
 
     try:
         response = requests.post(URL, data=payload.encode('utf-8'), headers=headers, timeout=REQUEST_TIMEOUT)
-        response.encoding = 'utf-8'  # Ensure response is interpreted as UTF-8
+        response.encoding = 'utf-8'
         response.raise_for_status()
         schedules = response.json()
 
@@ -95,6 +107,9 @@ def fetch_data() -> bool:
             raise ValueError("No data received in the response")
 
         first_schedule = schedules[0]
+        
+        # Log the received data for debugging
+        logger.info(f"Received data for: {first_schedule['name']} in {first_schedule['city']}")
 
         with waste_data.lock:
             waste_data.template = TemplateData(
@@ -147,6 +162,9 @@ def api_data_handler():
 
 def main():
     logger.info("Starting bin collector service...")
+    
+    # Log the initial address configuration
+    logger.info(f"Initial address configuration: {get_address()}")
     
     # Initial data fetch
     if not fetch_data_with_retry():
