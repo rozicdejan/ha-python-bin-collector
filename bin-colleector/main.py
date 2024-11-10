@@ -86,6 +86,11 @@ def get_address() -> str:
         logger.info(f"Found ADDRESS: {address}")
         return address
     
+    address = os.getenv("ADDRESS1")
+    if address:
+        logger.info(f"Found ADDRESS: {address}")
+        return address
+    
     # Get address from OPTIONS_ADDRESS first
     address = os.getenv("OPTIONS_ADDRESS")
     if address:

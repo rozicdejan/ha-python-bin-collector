@@ -13,7 +13,7 @@ ADDRESS=$(jq --raw-output '.address' /data/options.json)
 
 
 # Get config value from Home Assistant
-#export ADDRESS=$(bashio::config 'ADDRESS')
+export ADDRESS1=$(bashio::config 'address')
 
 # Start the Flask application
 python main.py
