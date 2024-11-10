@@ -27,6 +27,8 @@ Current version: **2.0.0**
 
 ## Installation
 
+[![Button Text](https://my.home-assistant.io/badges/supervisor_store.svg)](https://my.home-assistant.io/redirect/supervisor_store/)
+
 1. Navigate to your Home Assistant Supervisor panel
 2. Click on the Add-on Store
 3. Add this repository URL: `https://github.com/rozicdejan/ha-python-bin-collector`
