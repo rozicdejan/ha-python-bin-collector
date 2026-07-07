@@ -1,5 +1,4 @@
-ARG BUILD_FROM
-FROM $BUILD_FROM
+FROM ghcr.io/home-assistant/base:latest
 
 # Add Home Assistant Add-on labels
 LABEL \
@@ -7,7 +6,7 @@ LABEL \
     io.hass.description="Displays waste collection schedule for your address - Simbio mode" \
     io.hass.arch="armhf|aarch64|i386|amd64|armv7" \
     io.hass.type="addon" \
-    io.hass.version="1.1.90"
+    io.hass.version="1.1.91"
 
 # Set shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -32,7 +31,7 @@ ENV PATH="/usr/src/app/venv/bin:$PATH"
 # Create necessary directories
 RUN mkdir -p /logs /config /ssl /tmp
 
-# Copy your application files
+# Copy application files
 COPY . .
 
 # Install Python packages
@@ -40,8 +39,6 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Set permissions for run script
 RUN chmod a+x run.sh
-
-# Note: We don't need EXPOSE anymore as the port is dynamic
 
 # Start the application
 CMD [ "./run.sh" ]
