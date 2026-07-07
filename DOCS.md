@@ -28,7 +28,7 @@ port: 8081
 
 | Option   | Required | Default | Description |
 |----------|----------|---------|-------------|
-| address  | Yes      | "POLJSKA POT 6, LJUBEČNA" | Your street address for collection schedule |
+| address  | Yes      | "ZAČRET 66, LJUBEČNA" | Your street address for collection schedule |
 | port     | No       | 8081    | Port for the web interface |
 
 ## System Requirements
